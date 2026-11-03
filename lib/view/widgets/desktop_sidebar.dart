@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'afwi_logo.dart';
+import '../dashboard_view.dart';
+import '../pt_grades_view.dart';
+import '../chat_video_view.dart';
+import '../teacher_profile_view.dart';
 
 enum SidebarItem {
   home,
@@ -18,21 +22,53 @@ class DesktopSidebar extends StatelessWidget {
     this.onItemSelected,
   });
 
+  void _navigate(BuildContext context, SidebarItem item) {
+    if (item == selectedItem) return;
+
+    if (onItemSelected != null) {
+      onItemSelected!(item);
+      return;
+    }
+
+    Widget destination;
+    switch (item) {
+      case SidebarItem.home:
+        destination = const DashboardView();
+        break;
+      case SidebarItem.pt:
+        destination = const PtGradesView();
+        break;
+      case SidebarItem.message:
+        destination = const ChatVideoView();
+        break;
+      case SidebarItem.profile:
+        destination = const TeacherProfileView();
+        break;
+    }
+
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => destination,
+        transitionDuration: Duration.zero,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 190,
+      width: 195,
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(
           left: BorderSide(color: Color(0xFFE2E8F0), width: 1),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           // Official AFWI Logo
           const AfwiLogo(width: 145),
           const SizedBox(height: 44),
@@ -89,18 +125,7 @@ class DesktopSidebar extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {
-          if (onItemSelected != null) {
-            onItemSelected!(item);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('تم النقر على $title'),
-                duration: const Duration(seconds: 1),
-              ),
-            );
-          }
-        },
+        onTap: () => _navigate(context, item),
         borderRadius: BorderRadius.circular(22),
         hoverColor: const Color(0xFFF1F5F9),
         child: AnimatedContainer(

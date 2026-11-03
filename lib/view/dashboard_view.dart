@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'widgets/desktop_sidebar.dart';
+import 'pt_grades_view.dart';
 import 'chat_video_view.dart';
+import 'teacher_profile_view.dart';
 
 class DashboardView extends StatefulWidget {
   final ValueChanged<SidebarItem>? onSidebarNavigation;
@@ -18,12 +20,18 @@ class _DashboardViewState extends State<DashboardView> {
   final TextEditingController _searchController = TextEditingController();
 
   void _onActionTapped(String actionName) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('تم فتح: $actionName'),
-        duration: const Duration(seconds: 1),
-      ),
-    );
+    if (actionName == 'رفع الدرجات' || actionName == 'تحضير الطلاب') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const PtGradesView()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('تم فتح: $actionName'),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    }
   }
 
   @override
@@ -104,6 +112,14 @@ class _DashboardViewState extends State<DashboardView> {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (_) => const ChatVideoView()),
                 );
+              } else if (item == SidebarItem.pt) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const PtGradesView()),
+                );
+              } else if (item == SidebarItem.profile) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const TeacherProfileView()),
+                );
               }
             },
           ),
@@ -137,7 +153,7 @@ class _DashboardViewState extends State<DashboardView> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left: User Avatar (Clean Placeholder Box)
+          // Left: User Avatar (image/4.jpeg)
           Row(
             children: [
               Container(
@@ -145,13 +161,40 @@ class _DashboardViewState extends State<DashboardView> {
                 height: 48,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.25),
                   border: Border.all(color: Colors.white, width: 2),
                 ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'image/4.jpeg',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/4.jpeg',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 28,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.2),
+                ),
                 child: const Icon(
-                  Icons.person,
+                  Icons.notifications_none_rounded,
                   color: Colors.white,
-                  size: 28,
+                  size: 18,
                 ),
               ),
             ],
@@ -279,6 +322,8 @@ class _DashboardViewState extends State<DashboardView> {
             title: 'Level 2B',
             teacher: 'T. Rebeesh Ajlan',
             time: '02:00PM-04:00PM',
+            imagePath: 'image/2.jpeg',
+            fallbackAsset: 'assets/images/2.jpeg',
             badgeColor: const Color(0xFF15803D),
             badgeTitle: 'English File',
           ),
@@ -289,6 +334,8 @@ class _DashboardViewState extends State<DashboardView> {
             title: 'Level 3A',
             teacher: 'T. Rebeesh Ajlan',
             time: '04:00PM-06:00PM',
+            imagePath: 'image/3.jpeg',
+            fallbackAsset: 'assets/images/3.jpeg',
             badgeColor: const Color(0xFFB91C1C),
             badgeTitle: 'Ventures 1',
           ),
@@ -301,6 +348,8 @@ class _DashboardViewState extends State<DashboardView> {
     required String title,
     required String teacher,
     required String time,
+    required String imagePath,
+    required String fallbackAsset,
     required Color badgeColor,
     required String badgeTitle,
   }) {
@@ -325,36 +374,50 @@ class _DashboardViewState extends State<DashboardView> {
           ),
           child: Row(
             children: [
-              // Course Thumbnail Placeholder Box
+              // Course Thumbnail Image
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Container(
+                child: SizedBox(
                   width: 58,
                   height: 58,
-                  color: badgeColor,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(4),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.menu_book_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        badgeTitle,
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 8.5,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        fallbackAsset,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: badgeColor,
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(4),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.menu_book_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  badgeTitle,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8.5,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
                 ),
               ),

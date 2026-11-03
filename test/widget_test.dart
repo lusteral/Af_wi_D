@@ -5,10 +5,12 @@ import 'package:af_wi_desk/view/splash_view.dart';
 import 'package:af_wi_desk/view/welcome_view.dart';
 import 'package:af_wi_desk/view/login_component.dart';
 import 'package:af_wi_desk/view/dashboard_view.dart';
+import 'package:af_wi_desk/view/pt_grades_view.dart';
 import 'package:af_wi_desk/view/chat_video_view.dart';
+import 'package:af_wi_desk/view/teacher_profile_view.dart';
 
 void main() {
-  testWidgets('Complete User Navigation Scenario Flow Test',
+  testWidgets('Full Navigation Flow & All Desktop Screens Test',
       (WidgetTester tester) async {
     tester.view.physicalSize = const Size(1280, 800);
     tester.view.devicePixelRatio = 1.0;
@@ -38,14 +40,30 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(DashboardView), findsOneWidget);
 
-    // 5. Click 'Message' in Sidebar -> Navigates to ChatVideoView
+    // 5. Test P.T Screen (Grades table)
+    final ptBtn = find.text('P.T');
+    expect(ptBtn, findsOneWidget);
+    await tester.tap(ptBtn);
+    await tester.pumpAndSettle();
+    expect(find.byType(PtGradesView), findsOneWidget);
+    expect(find.text('Submit Grades'), findsOneWidget);
+
+    // 6. Test Profile Screen
+    final profileBtn = find.text('Profile');
+    expect(profileBtn, findsOneWidget);
+    await tester.tap(profileBtn);
+    await tester.pumpAndSettle();
+    expect(find.byType(TeacherProfileView), findsOneWidget);
+    expect(find.text('Rabish Ajlan'), findsOneWidget);
+
+    // 7. Test Message Screen
     final messageBtn = find.text('Message');
     expect(messageBtn, findsOneWidget);
     await tester.tap(messageBtn);
     await tester.pumpAndSettle();
     expect(find.byType(ChatVideoView), findsOneWidget);
 
-    // 6. Click 'HOME' in Sidebar -> Navigates back to DashboardView
+    // 8. Return to HOME (Dashboard)
     final homeBtn = find.text('HOME');
     expect(homeBtn, findsOneWidget);
     await tester.tap(homeBtn);

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'widgets/desktop_sidebar.dart';
 import 'dashboard_view.dart';
+import 'pt_grades_view.dart';
+import 'teacher_profile_view.dart';
 
 class ChatVideoView extends StatefulWidget {
   final ValueChanged<SidebarItem>? onSidebarNavigation;
@@ -180,6 +182,14 @@ class _ChatVideoViewState extends State<ChatVideoView> {
               if (item == SidebarItem.home) {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (_) => const DashboardView()),
+                );
+              } else if (item == SidebarItem.pt) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const PtGradesView()),
+                );
+              } else if (item == SidebarItem.profile) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const TeacherProfileView()),
                 );
               }
             },
